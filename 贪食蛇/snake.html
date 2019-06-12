@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪食蛇</title>
+    <style>
+        div{
+            font-size: 50px;
+        }
+        body{
+            background-color: black;
+        }
+    </style>
+    <script>
+        /**
+         * 使用面向对象实现贪食蛇
+         * @constructor
+         */
+
+        var map;
+        var snake;
+        var foot;
+        var time;
+        var sum=0;
+        var body;
+        // 绘制地图
+        function Map(){
+            this.width=800;
+            this.height=400;
+            this.color='#eee';
+            this.position='absolute';
+            this._map=null;
+            this.show=function(){
+                this._map=document.createElement('div');
+                this._map.style.width=this.width+'px';
+                this._map.style.height=this.height+'px';
+                this._map.style.backgroundColor=this.color;
+                this._map.style.position=this.position;
+                var body=document.getElementsByTagName('body')[0];
+                body.appendChild(this._map);
+                var mag=body.children[0];
+                mag.style.left=500+'px';
+                mag.style.top=100+'px';
+            }
+        }
+
+        // 绘制蛇头
+        function Div(){
+            this.color='red';
+            this.position='absolute';
+            this.show=function(){
+                var div=document.createElement('div');
+                div.style.color=this.color;
+                div.style.position=this.position;
+                body=document.getElementsByTagName('body')[0];
+                body.appendChild(div);
+                var txt=body.children[1];
+                txt.style.left=500+'px';
+                txt.style.top=550+'px';
+            }
+        }
+
+        // 绘制蛇尾
+        function Foot(){
+            this.width=20;
+            this.height=20;
+            this.color='green';
+            this.position='absolute';
+            this.x=0;
+            this.y=0;
+            this._foot=null;
+            this.show=function(){
+                if(this._foot==null){
+                    this._foot=document.createElement('div');
+                    this._foot.style.width=this.width+'px';
+                    this._foot.style.height=this.height+'px';
+                    this._foot.style.backgroundColor=this.color;
+                    this._foot.style.position=this.position;
+                    map._map.appendChild(this._foot);
+                }
+                this.x=Math.floor(Math.random()*40);
+                this.y=Math.floor(Math.random()*20);
+                this._foot.style.left=(this.x*20)+'px';
+                this._foot.style.top=(this.y*20)+'px';
+            }
+        }
+
+        function Snake(){
+            this.width=20;
+            this.height=20;
+            this.position='absolute';
+            this.direct='right';
+            //蛇节的信息
+            this.body=[
+                        [3,3,'red',null],
+                        [2,3,'blue',null],
+                        [1,3,'blue',null]
+            ];
+            //设置蛇的方向
+            this.setDirect=function(code){
+                switch (code){
+                    case 37:
+                        this.direct='left';
+                        break;
+                    case 38:
+                        this.direct='up';
+                        break;
+                    case 39:
+                        this.direct='right';
+                        break;
+                    case 40:
+                        this.direct='down';
+                        break;
+                }
+            };
+            this.show=function(){
+                for(var i=0;i<this.body.length;i++){
+                    //如果之前没有创建蛇节div，就去创建
+                    if(this.body[i][3]==null){
+                        this.body[i][3]=document.createElement('div');
+                        this.body[i][3].style.width=this.width+'px';
+                        this.body[i][3].style.height=this.height+'px';
+                        this.body[i][3].style.position=this.position;
+                        this.body[i][3].style.backgroundColor=this.body[i][2];
+                        map._map.appendChild(this.body[i][3]);
+                    }
+                    //如果不是第一次执行，那么就去执行下面的
+                    this.body[i][3].style.left=(this.body[i][0]*20)+'px';
+                    this.body[i][3].style.top=(this.body[i][1]*20)+'px';
+                }
+            };
+
+            this.move=function(){
+                var length=this.body.length;
+                for(var i=length-1;i>0;i--){    //共有几个蛇节
+                    //设置后面蛇节的坐标等于前面蛇节的坐标
+                    this.body[i][0]=this.body[i-1][0];      //让蛇动起来
+                    this.body[i][1]=this.body[i-1][1];      //让蛇动起来
+                }
+                //判断方向，便于设置蛇头的新坐标
+                switch (this.direct){
+                    case 'left':
+                        this.body[0][0]-=1;
+                        break;
+                    case 'right':
+                        this.body[0][0]+=1;
+                        break;
+                    case 'up':
+                        this.body[0][1]-=1;
+                        break;
+                    case 'down':
+                        this.body[0][1]+=1;
+                        break;
+                }
+                //判断是否吃到食物
+                var fen=5;
+                if(this.body[0][0]==foot.x&&this.body[0][1]==foot.y){
+                    var lengths=length-1;
+                    var x=this.body[lengths][0];
+                    var y=this.body[lengths][1];
+                    this.body.push([x,y,'blue',null]);
+                    sum=sum+fen;
+                    var div=body.children[1];
+                    div.innerHTML="总分"+sum;
+                    foot.show();
+                }
+                var body1=this.body[0][0];
+                var body2=this.body[0][1];
+                if(body1==40 || body1==-1 || body2==-1 || body2==20){
+                    alert("游戏结束");      //判断是否撞到墙
+                    clearInterval(time);
+                    return false;
+                }
+                for(var i=this.body.length-1;i>0;i--){
+                    if(this.body[0][0]==this.body[i][0] && this.body[0][1]==this.body[i][1]){
+                        alert("游戏结束");  //判断是否撞到自己
+                        clearInterval(time);
+                        return false;
+                    }
+                }
+                this.show();
+            };
+
+        }
+
+        window.onload=function(){
+            //实例化地图对象
+            //将地图对象放到body里
+            map=new Map();
+            map.show();
+
+            var div=new Div();
+            div.show();
+
+            //实例化食物对象
+            //将食物对象放到地图里
+            foot=new Foot();
+            foot.show();
+
+            //实例化蛇对象
+            //将蛇对象放到地图里
+            snake=new Snake();
+            snake.show();
+            time=setInterval('snake.move()',100);
+
+            //键盘控制方向
+            document.onkeyup=function(event){
+                var e=event||window.event;
+                var keyCode= e.keyCode;
+                snake.setDirect(keyCode);
+            }
+
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>

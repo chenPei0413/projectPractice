@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box { width:1800px; height:100px; border:1px solid #000; margin-bottom:20px; display:flex; }
+        .box div { width:400px; height:50px; line-height:50px; text-align:center;background:#ccc; }
+        .nowrap { justify-content: space-around }
+        .wrap { flex-wrap:wrap; }
+        .wrap-reverse { flex-wrap:wrap-reverse; }
+    </style>
+</head>
+<body>
+<div class="box nowrap">
+    <div>1</div><div>2</div><div>3</div><div>4</div>
+</div>
+<div class="box wrap">
+    <div>1</div><div>2</div><div>3</div><div>4</div>
+</div>
+<div class="box wrap-reverse">
+    <div>1</div><div>2</div><div>3</div><div>4</div>
+</div>
+<script>
+    function foo() {
+        console.log(this.a)
+    }
+    var a = 1;
+    foo()
+</script>
+</body>
+</html>
